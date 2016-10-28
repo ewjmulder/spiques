@@ -1,5 +1,11 @@
 package com.programyourhome.spiques.model;
 
-public class Quiz {
+import com.programyourhome.spiques.model.question.Question;
 
+public interface Quiz {
+
+	String getName();
+	
+	Iterable<Question> getQuestions(Order order);
+	
 }
