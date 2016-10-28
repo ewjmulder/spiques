@@ -18,7 +18,7 @@
 
 cd /tmp
 
-curl http://dl.piwall.co.uk/pwlibs1_1.1_armhf.deb
+wget http://dl.piwall.co.uk/pwlibs1_1.1_armhf.deb
 sudo dpkg -i /home/pi/pwlibs1_1.1_armhf.deb
-curl http://dl.piwall.co.uk/pwomxplayer_20130815_armhf.deb
+wget http://dl.piwall.co.uk/pwomxplayer_20130815_armhf.deb
 sudo dpkg -i /home/pi/pwomxplayer_20130815_armhf.deb
