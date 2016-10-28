@@ -1,2 +1,2 @@
-# spiques
-Self-build raspberry PI Quiz Using Extra Screens
+# SPiQues
+Self-build raspberry Pi Quiz using extra screens

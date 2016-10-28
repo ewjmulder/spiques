@@ -1,0 +1,4 @@
+include 'api'
+include 'service'
+
+rootProject.name = 'spiques'
