@@ -1,6 +1,7 @@
 dependencies {
 	compile project(':master:api')
 	compile "com.codepoetics:protonpack:1.9"
+	compile "javazoom:jlayer:1.0.1"
 }
 
 mainClassName = "com.programyourhome.spiques.master.StartMasterService"

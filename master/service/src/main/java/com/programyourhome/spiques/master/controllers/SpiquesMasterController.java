@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programyourhome.spiques.master.model.Position;
@@ -28,6 +30,7 @@ import com.programyourhome.spiques.master.model.QuizImpl;
 import com.programyourhome.spiques.master.model.Tile;
 import com.programyourhome.spiques.master.model.TileImpl;
 import com.programyourhome.spiques.master.model.question.MultipleChoiceQuestion;
+import com.programyourhome.spiques.master.voice.TextSpeaker;
 
 @RestController
 @RequestMapping("spiques")
@@ -35,6 +38,9 @@ public class SpiquesMasterController {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+	
+	@Autowired
+	private TextSpeaker textSpeaker;
 	
 	@Value("${tiles.ips}")
 	private String[] tileIps;
@@ -93,14 +99,24 @@ public class SpiquesMasterController {
     	return quizzes.get(id);
     }
     
-    // TODO: make nicer
     private void callTilesEndpoint(HttpMethod httpMethod, String path) {
     	tiles.values().forEach(tile -> restTemplate.exchange("http://" + tile.getIp() + ":8181/spiques/" + path, httpMethod, HttpEntity.EMPTY, String.class));
     }
 
     private Void callTileEndpoint(HttpMethod httpMethod, Tile tile, String path) {
-    	System.out.println("About to invoke:    " + "http://" + tile.getIp() + ":8181/spiques/" + path);
-    	restTemplate.exchange("http://" + tile.getIp() + ":8181/spiques/" + path, httpMethod, HttpEntity.EMPTY, String.class);
+    	return callTileEndpoint(httpMethod, tile, path, false);
+    }
+
+    // TODO: make nicer solution than return Void
+    private Void callTileEndpoint(HttpMethod httpMethod, Tile tile, String path, boolean async) {
+    	Runnable execution = () -> {
+	    	restTemplate.exchange("http://" + tile.getIp() + ":8181/spiques/" + path, httpMethod, HttpEntity.EMPTY, String.class);
+    	};
+    	if (async) {
+    		new Thread(execution).start();
+    	} else {
+    		execution.run();
+    	}
     	return null;
     }
 
@@ -130,15 +146,17 @@ public class SpiquesMasterController {
     }
     
     @RequestMapping(value = "quizzes/{id}/start", method = RequestMethod.POST)
-    public void startQuiz(@PathVariable("id") String id)  {
+    public void startQuiz(@PathVariable("id") String id) throws IOException {
     	this.startQuiz(this.quizzes.get(id));
     }
     
-    private void startQuiz(Quiz quiz) {
+    private void startQuiz(Quiz quiz) throws IOException {
     	// TODO: How can this be solved in a nice way? -> check on type and case is not very cool
     	MultipleChoiceQuestion q1 = (MultipleChoiceQuestion) quiz.getQuestions().iterator().next();
+    	textSpeaker.say(q1.getDeclaration(), q1.getLocale().toString());
     	com.codepoetics.protonpack.StreamUtils
-				.zip(tiles.values().stream(), q1.getAnswers().stream(), colors.stream(), (tile, answer, color) -> callTileEndpoint(HttpMethod.POST, tile, "display/answer/" + answer + "/" + color))
+				.zip(tiles.values().stream(), q1.getAnswers().stream(), colors.stream(), (tile, answer, color) ->
+						callTileEndpoint(HttpMethod.POST, tile, "display/answer/start/" + answer + "/" + color, true))
 // TODO: fix, getting list is dummy but needed to evaluate the stream
 				.collect(Collectors.toList());
     }
