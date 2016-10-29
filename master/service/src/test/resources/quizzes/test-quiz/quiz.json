@@ -1,0 +1,16 @@
+{
+  "name": "Test Quiz",
+  "questions": [
+    {
+      "type": "MultipleChoiceQuestionImpl",
+      "locale": "en-US",
+      "declaration": "What is the answer to this test question?",
+      "answers": [
+        "Answer A",
+        "Answer B",
+        "Answer C",
+        "Answer D"
+      ]
+    }
+  ]
+}
