@@ -1,0 +1,7 @@
+dependencies {
+	compile project(':tile:api')
+}
+
+apply plugin: 'application'
+
+mainClassName = "com.programyourhome.spiques.slave.StartSlaveService"

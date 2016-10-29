@@ -1,6 +1,6 @@
 include 'master:api'
 include 'master:service'
-include 'slave:api'
-include 'slave:service'
+include 'tile:api'
+include 'tile:service'
 
 rootProject.name = 'spiques'

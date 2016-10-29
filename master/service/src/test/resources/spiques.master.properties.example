@@ -1,0 +1,7 @@
+# Must be 4 ip's and must be in the order of position: TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
+tiles.ips		= 192.168.4.101,192.168.4.102,192.168.4.103,192.168.4.104
+
+
+
+
+spring.jackson.deserialization.fail-on-unknown-properties = true

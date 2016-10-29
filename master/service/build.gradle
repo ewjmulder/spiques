@@ -5,4 +5,4 @@ dependencies {
 
 apply plugin: 'application'
 
-mainClassName = "com.programyourhome.spiques.master.StartService"
+mainClassName = "com.programyourhome.spiques.master.StartMasterService"
