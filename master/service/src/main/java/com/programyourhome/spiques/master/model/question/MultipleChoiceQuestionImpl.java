@@ -20,7 +20,7 @@ public class MultipleChoiceQuestionImpl extends QuestionImpl implements Multiple
 	}
 	
 	@Override
-	public Iterable<String> getAnswers() {
+	public List<String> getAnswers() {
 		return answers;
 	}
 	

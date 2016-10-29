@@ -1,7 +1,27 @@
+
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
+    }
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+}
+
+apply plugin: 'javafx-gradle-plugin'
+
+jfx {
+    // minimal requirement for jfxJar-task
+    mainClass = 'com.programyourhome.spiques.tile.javafx.DisplayAnswer'
+
+    // minimal requirement for jfxNative-task
+    vendor = 'ErikMulder'
+}
+
+
 dependencies {
 	compile project(':tile:api')
 }
 
-apply plugin: 'application'
-
-mainClassName = "com.programyourhome.spiques.slave.StartSlaveService"
+mainClassName = "com.programyourhome.spiques.tile.StartTileService"

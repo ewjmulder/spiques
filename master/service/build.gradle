@@ -3,6 +3,4 @@ dependencies {
 	compile "com.codepoetics:protonpack:1.9"
 }
 
-apply plugin: 'application'
-
 mainClassName = "com.programyourhome.spiques.master.StartMasterService"

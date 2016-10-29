@@ -1,12 +1,12 @@
 package com.programyourhome.spiques.master.model;
 
 import java.util.Arrays;
-import java.util.List;
 
 import com.programyourhome.spiques.master.model.question.QuestionImpl;
 
 public class QuizImpl implements Quiz {
 
+	private String id;
 	private String name;
 	private QuestionImpl[] questions;
 	
@@ -18,6 +18,11 @@ public class QuizImpl implements Quiz {
 //		this.name = name;
 //		this.questions = questions;
 //	}
+	
+	@Override
+	public String getId() {
+		return this.id;
+	}
 	
 	@Override
 	public String getName() {

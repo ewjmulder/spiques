@@ -4,6 +4,8 @@ import com.programyourhome.spiques.master.model.question.Question;
 
 public interface Quiz {
 
+	String getId();
+	
 	String getName();
 	
 	default Iterable<? extends Question> getQuestions() {
