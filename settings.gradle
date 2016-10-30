@@ -1,3 +1,4 @@
+include 'controls'
 include 'master:api'
 include 'master:service'
 include 'tile:api'

@@ -31,7 +31,7 @@ public class TextSpeaker {
     
     // TODO: implement caching!!
 
-    public void say(final String text, final String locale) throws IOException {
+    public void say(final String text, final String locale) {
 // Option 1: command line 'say'
 //    	Runtime.getRuntime().exec(new String[] {"say", text});
     	
@@ -48,14 +48,18 @@ public class TextSpeaker {
         this.audioPlayer.playMp3(urlConnection.getInputStream());
 */
 // Option 3: responsive voice
-    	// Create the full url by filling in the text, locale and encoding.
-        final String urlString = String.format(RESPONSIVE_VOICE_TTS_URL,
-                URLEncoder.encode(text, ENCODING_UTF8), locale, ENCODING_UTF8);
-        final URLConnection urlConnection = new URL(urlString).openConnection();
-        // Set the user agent to a sane value to prevent a 403 response.
-        urlConnection.addRequestProperty("User-Agent", this.googleSpeechUserAgent);
-        // Input stream of the response is an mp3 stream with the given text as audio.
-        this.audioPlayer.playMp3(urlConnection.getInputStream());    	
+    	try {
+	    	// Create the full url by filling in the text, locale and encoding.
+	        final String urlString = String.format(RESPONSIVE_VOICE_TTS_URL,
+	                URLEncoder.encode(text, ENCODING_UTF8), locale, ENCODING_UTF8);
+	        final URLConnection urlConnection = new URL(urlString).openConnection();
+	        // Set the user agent to a sane value to prevent a 403 response.
+	        urlConnection.addRequestProperty("User-Agent", this.googleSpeechUserAgent);
+	        // Input stream of the response is an mp3 stream with the given text as audio.
+	        this.audioPlayer.playMp3(urlConnection.getInputStream());
+    	} catch (IOException e) {
+    		throw new IllegalStateException("IOException during say", e);
+    	}
     }
 
 }

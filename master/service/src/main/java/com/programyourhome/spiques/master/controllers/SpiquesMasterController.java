@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.websocket.server.PathParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.programyourhome.spiques.master.model.Position;
@@ -30,6 +28,7 @@ import com.programyourhome.spiques.master.model.QuizImpl;
 import com.programyourhome.spiques.master.model.Tile;
 import com.programyourhome.spiques.master.model.TileImpl;
 import com.programyourhome.spiques.master.model.question.MultipleChoiceQuestion;
+import com.programyourhome.spiques.master.model.question.Question;
 import com.programyourhome.spiques.master.voice.TextSpeaker;
 
 @RestController
@@ -69,6 +68,8 @@ public class SpiquesMasterController {
 				.filter(File::isDirectory)
 				.map(this::parseQuiz)
 				.collect(Collectors.toMap(Quiz::getId, quiz -> quiz));
+		this.stopTileListeners();
+		this.stopDisplayAnswers();
 	}
 	
 	private Quiz parseQuiz(File quizDirectory) {
@@ -128,6 +129,10 @@ public class SpiquesMasterController {
     	callTilesEndpoint(HttpMethod.POST, "listener/stop");
     }
 
+    private void stopDisplayAnswers() {
+    	callTilesEndpoint(HttpMethod.POST, "display/answer/stop");
+    }
+
     @RequestMapping(value = "testHeli", method = RequestMethod.POST)
     public void testHeli()  {
     	new Thread(() -> {
@@ -150,15 +155,51 @@ public class SpiquesMasterController {
     	this.startQuiz(this.quizzes.get(id));
     }
     
+    private Optional<Quiz> currentQuiz = Optional.empty();
+    private Optional<MultipleChoiceQuestion> currentQuestion = Optional.empty();
+    private Optional<Integer> currentQuestionIndex = Optional.empty();
+    
     private void startQuiz(Quiz quiz) throws IOException {
+    	this.currentQuiz = Optional.of(quiz);
+    	this.currentQuestionIndex = Optional.of(0);
+    	askNextQuestion();
+    }
+    
+    private void askNextQuestion() {
     	// TODO: How can this be solved in a nice way? -> check on type and case is not very cool
-    	MultipleChoiceQuestion q1 = (MultipleChoiceQuestion) quiz.getQuestions().iterator().next();
-    	textSpeaker.say(q1.getDeclaration(), q1.getLocale().toString());
+    	MultipleChoiceQuestion mcQuestion = (MultipleChoiceQuestion) currentQuiz.get().getQuestions().get(currentQuestionIndex.get());
+    	this.currentQuestion = Optional.of(mcQuestion);
+    	textSpeaker.say(mcQuestion.getDeclaration(), mcQuestion.getLocale().toString());
     	com.codepoetics.protonpack.StreamUtils
-				.zip(tiles.values().stream(), q1.getAnswers().stream(), colors.stream(), (tile, answer, color) ->
+				.zip(tiles.values().stream(), mcQuestion.getAnswers().stream(), colors.stream(), (tile, answer, color) ->
 						callTileEndpoint(HttpMethod.POST, tile, "display/answer/start/" + answer + "/" + color, true))
 // TODO: fix, getting list is dummy but needed to evaluate the stream
 				.collect(Collectors.toList());
+
     }
 
+    @RequestMapping(value = "pressed/{color}", method = RequestMethod.POST)
+    public void buttonPressed(@PathVariable("color") String color) {
+		currentQuestion.ifPresent(question -> {
+			if (question.getRightAnswerColor().equalsIgnoreCase(color)) {
+				textSpeaker.say("That is correct!", "en-uk");
+				if (currentQuiz.get().getQuestions().size() - 1 == currentQuestionIndex.get()) {
+					textSpeaker.say("That was all, thank you for playing!", "en-uk");
+					this.stopTileListeners();
+					this.stopDisplayAnswers();
+					currentQuiz = Optional.empty();
+					currentQuestion = Optional.empty();
+					currentQuestionIndex = Optional.empty();
+				} else {
+					currentQuestionIndex = Optional.of(currentQuestionIndex.get() + 1);
+					askNextQuestion();
+				}
+			} else {
+				textSpeaker.say("I'm afraid you are wrong!", "en-uk");				
+				textSpeaker.say("and did I mention you are the weakest link too?", "en-uk");				
+			}
+		});
+    }
+
+    
 }

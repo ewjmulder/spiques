@@ -42,9 +42,10 @@ public class SpiquesTileController {
 
     @RequestMapping(value = "listener/start", method = RequestMethod.POST)
     public void startPiWallListener() throws IOException, InterruptedException {
+    	this.stopDisplayAnswer();
     	this.stopPiWallListener();
     	//TODO: stream process output to own output, for debugging purposes
-   	this.currectPiWallListener = Optional.of(Runtime.getRuntime().exec("pwomxplayer --tile-code=" + tileCode + " udp://239.0.1.23:1234?buffer_size=1200000B"));
+    	this.currectPiWallListener = Optional.of(Runtime.getRuntime().exec("pwomxplayer --tile-code=" + tileCode + " udp://239.0.1.23:1234?buffer_size=1200000B"));
     }
 
     @RequestMapping(value = "listener/stop", method = RequestMethod.POST)
@@ -62,6 +63,7 @@ public class SpiquesTileController {
     // TODO: use shared model
     @RequestMapping(value = "display/answer/start/{text}/{color}", method = RequestMethod.POST)
 	public void displayAnswer(@PathVariable("text") String text, @PathVariable("color") String color) throws IOException, InterruptedException {
+    	this.stopPiWallListener();
     	this.stopDisplayAnswer();
     	//TODO: stream process output to own output, for debugging purposes
     	this.displayAnswerApplication = Optional.of(Runtime.getRuntime().exec(new String[] {"java", "-jar", "project-jfx.jar",  text, color}));
@@ -86,6 +88,7 @@ public class SpiquesTileController {
     @RequestMapping(value = "shutdown", method = RequestMethod.POST)
     public void shutdownServer() {
     	this.stopPiWallListener();
+    	this.stopDisplayAnswer();
         SpiquesTileServer.stopServer();
     }
 

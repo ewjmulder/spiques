@@ -1,6 +1,7 @@
 package com.programyourhome.spiques.master.model;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.programyourhome.spiques.master.model.question.QuestionImpl;
 
@@ -30,7 +31,7 @@ public class QuizImpl implements Quiz {
 	}
 
 	@Override
-	public Iterable<QuestionImpl> getQuestions(Order order) {
+	public List<QuestionImpl> getQuestions(Order order) {
 		return Arrays.asList(this.questions);
 	}
 	

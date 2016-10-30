@@ -19,10 +19,10 @@ public class QuizBuilder {
 		this.questions = new ArrayList<>();
 	}
 	
-	public QuizBuilder addMultipleChoiceQuestion(Locale locale, String declaration, String ... answers) {
-		this.questions.add(new MultipleChoiceQuestionImpl(locale, declaration, answers));
-		return this;
-	}
+//	public QuizBuilder addMultipleChoiceQuestion(Locale locale, String declaration, String ... answers) {
+//		this.questions.add(new MultipleChoiceQuestionImpl(locale, declaration, answers));
+//		return this;
+//	}
 	
 	public Quiz build() {
 		return null;//new QuizImpl(name, questions);

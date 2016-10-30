@@ -10,4 +10,6 @@ public interface MultipleChoiceQuestion extends Question {
 	
 	List<String> getAnswers();
 	
+	String getRightAnswerColor();
+	
 }

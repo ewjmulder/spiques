@@ -4,14 +4,39 @@
   "questions": [
     {
       "type": "MultipleChoiceQuestionImpl",
-      "locale": "en-US",
-      "declaration": "What is the answer to this test question?",
+      "locale": "en-uk",
+      "declaration": "What is Ray's favorite food?",
       "answers": [
-        "Answer A",
-        "Answer B",
-        "Answer C",
-        "Answer D"
-      ]
+        "Chinese",
+        "Italian",
+        "Hollandse Pot",
+        "Fast Food"
+      ],
+      "rightAnswerColor": "GREEN"
+    },
+    {
+      "type": "MultipleChoiceQuestionImpl",
+      "locale": "en-uk",
+      "declaration": "How many light hours is the sun away from the earth?",
+      "answers": [
+        "1",
+        "20",
+        "0.12",
+        "0.05"
+      ],
+      "rightAnswerColor": "BLUE"
+    },
+    {
+      "type": "MultipleChoiceQuestionImpl",
+      "locale": "en-uk",
+      "declaration": "What is the capital of Australia?",
+      "answers": [
+        "Perth",
+        "Sydney",
+        "Brisbane",
+        "Canberra"
+      ],
+      "rightAnswerColor": "YELLOW"
     }
   ]
 }
